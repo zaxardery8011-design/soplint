@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "deny-daemon-self-restart",
+      "kind": "deny",
+      "pattern": "(?i)(Stop-Process|taskkill|kill|Restart-Service).*(daemon|agent-daemon|worker-daemon)",
+      "reason": "Do not restart or kill a long-running daemon from inside its own guarded tool flow."
+    },
+    {
+      "id": "deny-new-tool-without-novelty-scan",
+      "kind": "novelty_gate",
+      "pattern": "(?i)(function\\s+[A-Za-z]+-[A-Za-z0-9]+|New-Item.*tools?[\\\\/].*\\.(ps1|js|py))",
+      "ack_pattern": "(?i)novelty-checked",
+      "reason": "Before adding a new tool, search existing tools and leave a novelty-checked note."
+    }
+  ]
+}

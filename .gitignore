@@ -1,0 +1,6 @@
+soplint.config.json
+tmp/
+temp/
+tests/tmp/
+*.tmp
+*.log

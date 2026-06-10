@@ -1,0 +1,48 @@
+# Agent Operating Notes
+
+## Belief Revision
+
+Use `Add-BeliefRevision` when new evidence changes a previous working belief.
+
+Required cases:
+
+- A user correction disproves an assumption you used.
+- A test result contradicts your implementation plan.
+- A review finds a missed requirement or behavior.
+- A memory or policy file conflicts with your current plan.
+- A prior estimate changes after direct inspection.
+- Multiple sources disagree and you choose a new position.
+
+Each entry must include:
+
+- The previous belief.
+- The revised belief.
+- The trigger category.
+- The confidence shift when useful.
+
+Trigger values:
+
+- `agent_review`
+- `worker_completed`
+- `user_calibration`
+- `specification_review`
+- `multi_perspective`
+- `estimate_correction`
+- `memory_conflict`
+- `other`
+
+## Lint Discipline
+
+Run `pwsh -NoProfile -File bin/soplint.ps1` before relying on memory or policy files.
+
+If a lint check fails:
+
+- Do not treat the policy state as current.
+- Read the failing file named by the check.
+- Fix the source of truth, not the symptom.
+- Rerun the exact lint command.
+- Record a belief revision if the failure changed your plan.
+
+The default tool policy is `ask_research`.
+
+The policy decision above must also appear in any memory file that defines the default.

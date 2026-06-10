@@ -1,0 +1,8 @@
+{
+  "memory_dir": "tests/fixtures/pass/memory",
+  "claude_md_path": "tests/fixtures/pass/CLAUDE.md",
+  "beliefs_log": "tests/fixtures/pass/beliefs.jsonl",
+  "index_file": "tests/fixtures/pass/memory/MEMORY.md",
+  "belief_revision_days": 30,
+  "index_max_kb": 50
+}
