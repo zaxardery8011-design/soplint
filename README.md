@@ -42,12 +42,14 @@ Each check exits non-zero on failure, so wiring into CI or a cron job is trivial
 
 ### 3. Pre-action gate (hook)
 
-`hooks/pretool-guard.ps1` runs as a PreToolUse hook and parses the command your agent is about to execute with PowerShell's AST (not regex on raw text, which false-positives on quoted strings). Rules live in external JSON:
+`hooks/pretool-guard.ps1` runs as a PreToolUse hook. For shell commands, it reduces the PowerShell input to AST command signatures before applying external deny/novelty regex rules, avoiding common quoted-string false positives. This is a guardrail, not a sandbox. Rules live in external JSON:
 
 - **Deny rules** — hard red lines. Example shipped: an agent must never respawn its own daemon (learned via cascade process death).
 - **Novelty gate** — before the agent builds a new tool, it must prove it scanned existing tools first (an acknowledgement comment). The agent that rebuilds tools it already has is burning your money twice.
 
-See `rules/guard-rules.example.json` for the schema.
+See `rules/guard-rules.example.json` for the expected rule-file shape.
+
+Scope: the AST parse understands PowerShell commands. If your agent shells out through bash or python, you need an equivalent parser on that side — the deny-rules JSON is portable, the parser is not.
 
 ## Quickstart
 
@@ -71,11 +73,11 @@ This is a regression test suite for **known** failure modes, not alignment:
 
 - Your agent will still make novel mistakes. Lint only stops the old ones from coming back.
 - Every check here exists because something already went wrong. This is scar tissue, codified.
-- It's PowerShell because my stack is. If yours isn't, steal the ideas — the mechanisms (external audit trail, discipline-as-CI, AST-based pre-action gates) are portable to any language.
+- It's PowerShell because my stack is — a better fit than it sounds: the AST parser the gate relies on ships in pwsh's standard library, zero dependencies. If your stack isn't PowerShell, steal the ideas — the mechanisms (external audit trail, discipline-as-CI, AST-based pre-action gates) are portable to any language.
 
 ## The loop that makes it compound
 
-Anthropic's advice for agents: when your agent makes a mistake, have it write the lesson to CLAUDE.md or a skill. That's step one. **Step two is testing that it actually did** — a lesson written to memory is a hope; a lesson with a lint rule behind it is a guarantee.
+Anthropic's advice for agents: when your agent makes a mistake, have it write the lesson to CLAUDE.md or a skill. That's step one. **Step two is testing that it actually did** — a lesson written to memory is a hope; a lesson with a lint rule behind it becomes a regression signal you can run every day.
 
 When your agent gets away with something this week, don't just correct it. Write the check.
 
