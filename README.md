@@ -4,7 +4,7 @@
 
 I've run a personal AI agent 24/7 for a year. It writes good code — that was never the problem. The problem was discipline: it said "fixed and verified" without verifying, silently reversed its own judgments, and made policy decisions that rotted in memory while its behavior drifted back to old habits.
 
-Code linters catch style violations. Memory tools catch broken links and stale notes. Nothing catches an agent **breaking the working agreements you made with it**. soplint does.
+Code linters catch style violations. Memory tools catch broken links and stale notes. Harness linters (e.g. [AgentLint](https://github.com/0xmariowu/AgentLint)) check that your rules files are well-written. soplint checks something else: did the agent actually **keep the working agreements you made with it**?
 
 ## How it works
 
@@ -23,7 +23,7 @@ Add-BeliefRevision -From "Assumed the cache layer was thread-safe" `
 
 One JSON line per revision (`from_belief`, `to_belief`, `trigger`, `confidence_shift`), appended to a greppable JSONL file. The `trigger` field is a deliberate enum — free-text triggers turn an audit log into noise.
 
-Why external file instead of a prompt rule? Because prompt rules fail. I watched my agent violate a written "acknowledge belief changes" rule three times in one day. An agent can ignore an instruction; it can't fake a file that isn't there — and a lint check audits that the log is actually being written.
+Why external file instead of a prompt rule? Because prompt rules fail. I watched my agent violate a written "acknowledge belief changes" rule three times in one day. An agent can ignore an instruction silently; a missing or stale log file is loud — and a lint check audits that the log is actually being written. (Could an agent with write access fake entries? Technically yes — but that's a far higher bar than ignoring a prompt, and fakes leave greppable inconsistencies.)
 
 ### 2. Discipline checks (run daily via cron / CI)
 
