@@ -114,6 +114,16 @@ Anthropic's advice for agents: when your agent makes a mistake, have it write th
 
 When your agent gets away with something this week, don't just correct it. Write the check.
 
+## Related — the discipline toolchain
+
+soplint is a **guardrail** — it audits whether an AI work node stays disciplined. Want a local agent runtime that actually runs these disciplined agents? Start with the engine:
+
+- **[aiwff-runtime](https://github.com/zaxardery8011-design/aiwff-runtime)** — the local agent runtime (the engine that runs disciplined agents) → **想要一台真的跑得動的 agent runtime？從這台小主腦開始。**
+- **[execution-proofs](https://github.com/zaxardery8011-design/execution-proofs)** — MCP telemetry gateway: force agents to prove "done" with real files & timestamps
+- **[soplint](https://github.com/zaxardery8011-design/soplint)** — static SOP-compliance audit for AI work nodes (this repo)
+
+> 引擎（跑得動的 agent）＋護欄（審紀律、逼證明），同一套「讓 AI 守紀律」哲學的兩面。
+
 ## License
 
 MIT
