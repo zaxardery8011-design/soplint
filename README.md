@@ -67,6 +67,39 @@ pwsh -NoProfile -File tests/run_all_tests.ps1
 
 Requires PowerShell 7+ (runs on Linux / macOS / Windows — CI covers all three). See `examples/CLAUDE.md.example` for the SOP block to paste into your agent's instructions.
 
+## Install in an agent repo
+
+There is no package manager wrapper yet. For now, vendor or clone the repo and point `soplint.config.json` at your agent's real files:
+
+```powershell
+git clone https://github.com/zaxardery8011-design/soplint.git tools/soplint
+Copy-Item tools/soplint/soplint.config.example.json soplint.config.json
+# edit paths in soplint.config.json
+pwsh -NoProfile -File tools/soplint/bin/soplint.ps1 -Config soplint.config.json
+```
+
+Typical passing output:
+
+```text
+[OK ] belief_revision_audit.ps1 - PASS belief-revision-audit (log present and fresh within 30 days)
+[OK ] decision_propagation.ps1 - PASS decision-propagation (memory decisions are present in the policy file)
+[OK ] index_health.ps1 - PASS index-health (index 0KB, no duplicate links)
+[OK ] memory_frontmatter.ps1 - PASS memory-frontmatter (1 memory files scanned)
+
+============================================================
+SOPLINT: 4 pass / 0 fail
+```
+
+In CI, run the same command and let non-zero exits fail the build. In a long-running agent, run it from a scheduler and route failures into the agent inbox.
+
+## 中文簡介
+
+soplint 是一個給 AI agent 用的「工作紀律 linter」。
+
+它不檢查程式碼風格，而是檢查 agent 是否真的遵守你和它約好的工作規則：例如修正判斷時有沒有留下 belief revision 紀錄、重要決策有沒有同步到操作規範、memory index 是否過大或重複、執行高風險動作前是否被 pretool guard 擋下。
+
+這個工具適合長期運行的 Claude Code / Codex / 自建 agent 系統，用來把事故後得到的教訓變成每天可跑的 regression check。它的目標不是讓 agent 變聰明，而是防止同一種錯誤反覆回來。
+
 ## What this does NOT solve
 
 This is a regression test suite for **known** failure modes, not alignment:
