@@ -6,6 +6,11 @@ I've run a personal AI agent 24/7 for a year. It writes good code — that was n
 
 Code linters catch style violations. Memory tools catch broken links and stale notes. Harness linters (e.g. [AgentLint](https://github.com/0xmariowu/AgentLint)) check that your rules files are well-written. soplint checks something else: did the agent actually **keep the working agreements you made with it**?
 
+> **Start with the engine first.**
+> soplint is the guardrail, not the runtime: it audits discipline after you already have an agent that can run.
+> If you want a local agent that can take tasks, run workers, and leave file-based evidence, start with [aiwff-runtime](https://github.com/zaxardery8011-design/aiwff-runtime).
+> 中文入口: [小主腦導入頁](https://zax.com.tw/minibrain)。
+
 ## How it works
 
 Three mechanisms, all extracted from a year of real incidents:
