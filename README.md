@@ -124,6 +124,7 @@ When your agent gets away with something this week, don't just correct it. Write
 soplint is a **guardrail** — it audits whether an AI work node stays disciplined. Want a local agent runtime that actually runs these disciplined agents? Start with the engine:
 
 - **[aiwff-runtime](https://github.com/zaxardery8011-design/aiwff-runtime)** — the local agent runtime (the engine that runs disciplined agents) → **想要一台真的跑得動的 agent runtime？從這台小主腦開始。**
+- **[aiwff-mini](https://github.com/zaxardery8011-design/aiwff-mini)** — a personal brain with a soul file, cross-chat memory and integrity guards; paste one line into your AI tool and it installs itself → **想要一顆有靈魂錨、記得住事、還會擋自己竄改設定的個人主腦？貼一句話就裝好。**
 - **[execution-proofs](https://github.com/zaxardery8011-design/execution-proofs)** — MCP telemetry gateway: force agents to prove "done" with real files & timestamps
 - **[soplint](https://github.com/zaxardery8011-design/soplint)** — static SOP-compliance audit for AI work nodes (this repo)
 
