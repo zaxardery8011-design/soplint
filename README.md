@@ -130,6 +130,186 @@ soplint is a **guardrail** — it audits whether an AI work node stays disciplin
 
 > 引擎（跑得動的 agent）＋護欄（審紀律、逼證明），同一套「讓 AI 守紀律」哲學的兩面。
 
+## Install with an AI
+
+Paste this into your AI tool (Claude Code, Codex, Cursor, Cline, Gemini, or similar):
+
+```
+Read README.md in this folder and install soplint for me.
+```
+
+It will first check whether it can finish, show you the files it plans to create, wait for your approval, and then run a self-check.
+
+Requirement: PowerShell 7 or newer. If it is missing, stop and say so instead of pushing through.
+
+## For the AI Performing the Installation
+
+You are installing soplint for your human.
+
+This installation is **additive only**: create only this tool's own files. Do not touch their other settings, do not edit their shell profile, and do not modify any existing files unless they explicitly allow it and you make a backup first.
+
+There is no installer script and no package-manager wrapper. "Install" means: get a complete soplint checkout, copy `soplint.config.example.json` to `soplint.config.json`, and prove the package runs. Pointing that config at the agent's real files is a separate, approved edit.
+
+### Step 0 - Capability Check First
+
+**Do not start an installation you cannot finish.** Confirm that you can do all four:
+
+1. Read files
+2. Write files into a new directory
+3. Run commands and see their output
+4. Report the result back to the human
+
+If any one is missing, stop here, state exactly what is missing, and **create no files at all**. A clean refusal is better than a half-installed system.
+
+### Step 1 - Do Not Install Inside the Development Tree
+
+**Never modify the author's own system.**
+
+Check whether your current directory is this tool's own source tree, not someone else's copy.
+
+**There is only one stop condition**: the marker file `.dev-tree` exists in the soplint checkout root. It appears only in the author's working directory and is not committed to the repo, so a copy you got from `git clone` will not have it.
+
+The other two checks are supporting signals. **On their own, they are not a reason to stop**, but you should still report them:
+
+- Does the current path contain fragments such as `open_source_prep/`?
+- Does the current directory have uncommitted local changes?
+
+> Warning: **A `git clone` copy normally has `.git`, and its remote normally points to this project's upstream. That is normal and does not count as a match.** Every legitimate copy looks like that; using it as a stop condition would block every user.
+
+**Report which checks you actually ran and which ones were outside your permissions.** "I ran checks 2 and 3; check 1 was outside my permission scope" is a correct answer. **Silently skipping a check and saying everything is fine is not.**
+
+If the marker file matches, stop and explain. Do not install, and do not "helpfully" install somewhere else.
+
+### Step 2 - Detect the Environment
+
+Actually run the checks. Do not assume:
+
+| Item | How to check | Requirement |
+|---|---|---|
+| PowerShell | `pwsh -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'` | 7.0 or newer |
+| Install destination | the path the human named (agent repo or `<repo-path>`) | Must be writable |
+| Package completeness | Self-check 2 below | All listed files must exist after clone |
+
+**If the machine has PowerShell 5.1 but not 7, stop and report it**, including this fix command: `winget install --id Microsoft.PowerShell`. Do not fall back to 5.1. This package has only been verified on PowerShell 7 or newer, and running quietly in an unverified environment is worse than not installing.
+
+> Warning: **On many machines, `powershell` is 5.1 and `pwsh` is 7, and both may be installed side by side.** Confirming that 7 exists does not prove the next command will run under 7. Every later command must explicitly call **`pwsh`**, not the system default `powershell`.
+
+### Step 3 - Show the Plan, Wait for Approval, Then Act
+
+Ask which shape they want:
+
+1. **Vendor into an existing agent repo** (the documented default): clone soplint to `tools/soplint` inside that repo, and copy the example config to `soplint.config.json` at the agent-repo root.
+2. **Use an existing soplint checkout**: if `<repo-path>` already contains `bin/soplint.ps1` and the other required files, do not clone again. Only copy the config if they want a local `soplint.config.json`.
+
+Always use this order:
+
+1. **List** every file you are going to create, with its full path
+2. **Show the list to the human**
+3. **Wait for approval** - create nothing until they approve
+4. **Run** the commands below. Type them exactly.
+
+Vendor into an agent repo (current directory = the agent repo):
+
+```powershell
+git clone https://github.com/zaxardery8011-design/soplint.git tools/soplint
+Copy-Item tools/soplint/soplint.config.example.json soplint.config.json
+```
+
+Already inside `<repo-path>`:
+
+```powershell
+Copy-Item soplint.config.example.json soplint.config.json
+```
+
+Rules while running:
+
+- If the target file or clone directory already exists, **do not overwrite**. Back up every file that would be replaced as `<original-name>.bak.<timestamp>`, and say what you backed up
+- Do not create anything outside the agreed destination
+- Do not touch PATH or shell profiles in this step
+- Do not edit the human's `CLAUDE.md`, memory files, or hook settings unless they explicitly asked
+
+### Step 4 - Point the Config (only after they say so)
+
+`soplint.config.json` copied from the example still points at `tests/fixtures/pass/...`. That is a **package fixture**, not the human's agent.
+
+Ask:
+
+- Where is their memory directory?
+- Where is their `CLAUDE.md` (or equivalent policy file)?
+- Where is their beliefs log (JSONL)?
+- Where is their memory index file?
+
+Write those four keys (`memory_dir`, `claude_md_path`, `beliefs_log`, `index_file`) and **read the file back for confirmation**. Do not invent paths.
+
+If they only wanted to verify that soplint itself works, leave the example paths and skip this step.
+
+> Warning: **Do not treat a green run against the unedited example config as a lint of the human's agent.** Example paths still point at `tests/fixtures/pass/...` (Step 4). The runner refreshes that bundled fixture's mtime before the checks so the Quickstart does not rot after 30 days; that refresh does not apply to a real `beliefs_log`. Package health is the test suite in Step 5. A run against the human's real files is a lint of *their* agent, not a verdict on the install.
+
+### Step 5 - Acceptance Check
+
+Run these from `<repo-path>` (the soplint checkout root; if you vendored it, that is `tools/soplint`). All five must pass:
+
+1. PowerShell 7 or newer:
+
+```powershell
+pwsh -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'
+```
+
+2. Package completeness (prints `True` eleven times, then `PACKAGE COMPLETE`):
+
+```powershell
+pwsh -NoProfile -Command ' $r = Test-Path -LiteralPath @("bin/soplint.ps1","checks/belief_revision_audit.ps1","checks/decision_propagation.ps1","checks/index_health.ps1","checks/memory_frontmatter.ps1","lib/BeliefLog.psm1","hooks/pretool-guard.ps1","soplint.config.example.json","tests/run_all_tests.ps1","tests/prepare_pass_fixtures.ps1","examples/CLAUDE.md.example"); $r -join ","; if ($r -contains $false) { exit 1 }; "PACKAGE COMPLETE" '
+```
+
+3. Example config parses:
+
+```powershell
+pwsh -NoProfile -Command 'Get-Content -Raw -LiteralPath soplint.config.example.json | ConvertFrom-Json | ConvertTo-Json -Compress'
+```
+
+4. Test suite (must print `TESTS: 6 pass / 0 fail`):
+
+```powershell
+pwsh -NoProfile -File tests/run_all_tests.ps1
+```
+
+5. BeliefLog module loads (must print `Add-BeliefRevision,Get-BeliefRevisions`):
+
+```powershell
+pwsh -NoProfile -Command 'Import-Module ./lib/BeliefLog.psm1 -Force; (Get-Command -Module BeliefLog | Select-Object -ExpandProperty Name) -join ","'
+```
+
+If they asked you to point the config at real agent files, you may then run:
+
+```powershell
+pwsh -NoProfile -File bin/soplint.ps1 -Config <path-to-their-soplint.config.json>
+```
+
+A non-zero exit there is a lint finding against those files. Report it. Do not edit soplint's checks to make it pass.
+
+### Step 6 - Report Back
+
+Report in this order:
+
+1. Which Step 1 checks you actually ran, and which ones were outside your permissions
+2. The file list you showed before acting in Step 3
+3. The result of each of the five acceptance checks in Step 5
+4. Whether the config still points at fixtures or at the human's real files
+5. Anything you guessed, bypassed, or could not verify
+
+If any item fails, say it failed and stop. **Do not edit the scripts or fixtures just to make the checks pass.** An honest failure is more useful than a secretly fixed success.
+
+## Definition of Alive
+
+It is only alive when all four are true:
+
+1. Every soplint command is run with `pwsh` 7 or newer
+2. The checkout contains the runner, four checks, BeliefLog, example config, and test runner
+3. `tests/run_all_tests.ps1` reports `TESTS: 6 pass / 0 fail`
+4. `bin/soplint.ps1 -Config soplint.config.example.json` prints `SOPLINT: 4 pass / 0 fail`
+
+> 中文摘要：先自檢能否讀寫檔與執行 PowerShell 7；碰到 `.dev-tree` 就停；先列檔案等批准再 clone/copy；裝好的定義是測試套件 6 pass，且 example config 跑出 `SOPLINT: 4 pass / 0 fail`。
+
 ## License
 
 MIT

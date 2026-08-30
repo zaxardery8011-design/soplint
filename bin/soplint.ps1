@@ -7,11 +7,25 @@ param(
 $ErrorActionPreference = 'Continue'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $checksDir = Join-Path $repoRoot 'checks'
+$prep = Join-Path $repoRoot 'tests/prepare_pass_fixtures.ps1'
 
 try {
     $configPath = (Resolve-Path -LiteralPath $Config -ErrorAction Stop).Path
 } catch {
     Write-Host "FAIL config file not found: $Config" -ForegroundColor Red
+    exit 1
+}
+
+# Keep tests/fixtures/pass/beliefs.jsonl from aging out of belief_revision_days.
+# Does not change check logic; only bumps the bundled demo fixture mtime.
+if (-not (Test-Path -LiteralPath $prep)) {
+    Write-Host "FAIL fixture prepare script not found: $prep" -ForegroundColor Red
+    exit 1
+}
+$prepOut = & pwsh -NoProfile -File $prep 2>&1
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "FAIL could not refresh pass fixture (exit=$LASTEXITCODE)" -ForegroundColor Red
+    $prepOut | ForEach-Object { Write-Host "       $_" -ForegroundColor DarkRed }
     exit 1
 }
 
