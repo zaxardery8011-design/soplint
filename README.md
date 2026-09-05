@@ -2,7 +2,7 @@
 
 **Lint rules for your AI agent's discipline, not its code.**
 
-I've run a personal AI agent 24/7 for a year. It writes good code — that was never the problem. The problem was discipline: it said "fixed and verified" without verifying, silently reversed its own judgments, and made policy decisions that rotted in memory while its behavior drifted back to old habits.
+I've run a personal AI agent 24/7 since May 2026. It writes good code — that was never the problem. The problem was discipline: it said "fixed and verified" without verifying, silently reversed its own judgments, and made policy decisions that rotted in memory while its behavior drifted back to old habits.
 
 Code linters catch style violations. Memory tools catch broken links and stale notes. Harness linters (e.g. [AgentLint](https://github.com/0xmariowu/AgentLint)) check that your rules files are well-written. soplint checks something else: did the agent actually **keep the working agreements you made with it**?
 
@@ -13,7 +13,7 @@ Code linters catch style violations. Memory tools catch broken links and stale n
 
 ## How it works
 
-Three mechanisms, all extracted from a year of real incidents:
+Three mechanisms, all extracted from four months of real incidents:
 
 ### 1. Belief revision audit trail
 
