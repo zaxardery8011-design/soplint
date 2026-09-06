@@ -1,0 +1,13 @@
+{
+  "name": "soplint",
+  "owner": {
+    "name": "zaxardery8011-design"
+  },
+  "plugins": [
+    {
+      "name": "soplint",
+      "source": "./",
+      "description": "Lint rules for your AI agent's discipline, not its code. Audits belief-revision logs, decision propagation into CLAUDE.md, memory frontmatter, and index health."
+    }
+  ]
+}

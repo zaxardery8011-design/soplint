@@ -74,7 +74,15 @@ Requires PowerShell 7+ (runs on Linux / macOS / Windows — CI covers all three)
 
 ## Install in an agent repo
 
-There is no package manager wrapper yet. For now, vendor or clone the repo and point `soplint.config.json` at your agent's real files:
+One-line install as a Claude Code plugin:
+
+```
+/plugin marketplace add zaxardery8011-design/soplint
+```
+
+That registers the marketplace and the soplint skill. The skill checks PowerShell 7, writes `soplint.config.json` with your agent's paths, runs `bin/soplint.ps1`, and reports pass/fail.
+
+Fallback if you are not using Claude Code plugins: vendor or clone the repo and point `soplint.config.json` at your agent's real files:
 
 ```powershell
 git clone https://github.com/zaxardery8011-design/soplint.git tools/soplint
@@ -148,7 +156,7 @@ You are installing soplint for your human.
 
 This installation is **additive only**: create only this tool's own files. Do not touch their other settings, do not edit their shell profile, and do not modify any existing files unless they explicitly allow it and you make a backup first.
 
-There is no installer script and no package-manager wrapper. "Install" means: get a complete soplint checkout, copy `soplint.config.example.json` to `soplint.config.json`, and prove the package runs. Pointing that config at the agent's real files is a separate, approved edit.
+Prefer the Claude Code plugin (`/plugin marketplace add zaxardery8011-design/soplint`). Otherwise "install" means: get a complete soplint checkout, copy `soplint.config.example.json` to `soplint.config.json`, and prove the package runs. Pointing that config at the agent's real files is a separate, approved edit.
 
 ### Step 0 - Capability Check First
 
