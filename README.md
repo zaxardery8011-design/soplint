@@ -2,7 +2,7 @@
 
 **Lint rules for your AI agent's discipline, not its code.**
 
-I've run a personal AI agent 24/7 since May 2026. It writes good code — that was never the problem. The problem was discipline: it said "fixed and verified" without verifying, silently reversed its own judgments, and made policy decisions that rotted in memory while its behavior drifted back to old habits.
+I've run a personal AI agent 24/7 since May 2026. The code was fine. The failures were discipline. It said "fixed and verified" without verifying, silently reversed its own judgments, and made policy decisions that rotted in memory while its behavior drifted back to old habits.
 
 Code linters catch style violations. Memory tools catch broken links and stale notes. Harness linters (e.g. [AgentLint](https://github.com/0xmariowu/AgentLint)) check that your rules files are well-written. soplint checks something else: did the agent actually **keep the working agreements you made with it**?
 
@@ -26,9 +26,9 @@ Add-BeliefRevision -From "Assumed the cache layer was thread-safe" `
                    -Trigger estimate_correction -ConfidenceShift "high->low"
 ```
 
-One JSON line per revision (`from_belief`, `to_belief`, `trigger`, `confidence_shift`), appended to a greppable JSONL file. The `trigger` field is a deliberate enum — free-text triggers turn an audit log into noise.
+One JSON line per revision (`from_belief`, `to_belief`, `trigger`, `confidence_shift`), appended to a greppable JSONL file. The `trigger` field is a deliberate enum. Free-text triggers turn an audit log into noise.
 
-Why external file instead of a prompt rule? Because prompt rules fail. I watched my agent violate a written "acknowledge belief changes" rule three times in one day. An agent can ignore an instruction silently; a missing or stale log file is loud — and a lint check audits that the log is actually being written. (Could an agent with write access fake entries? Technically yes — but that's a far higher bar than ignoring a prompt, and fakes leave greppable inconsistencies.)
+Why external file instead of a prompt rule? Because prompt rules fail. I watched my agent violate a written "acknowledge belief changes" rule three times in one day. An agent can ignore an instruction silently; a missing or stale log file is loud. A lint check audits that the log is actually being written. (Could an agent with write access fake entries? Technically yes. That's a far higher bar than ignoring a prompt, and fakes leave greppable inconsistencies.)
 
 ### 2. Discipline checks (run daily via cron / CI)
 
@@ -43,18 +43,18 @@ pwsh -NoProfile -File bin/soplint.ps1
 | `memory_frontmatter` | Memory files missing required metadata | Unsearchable memories are write-only memories |
 | `index_health` | Memory index oversized or with duplicate entries | A bloated index silently truncates what your agent loads each session |
 
-Each check exits non-zero on failure, so wiring into CI or a cron job is trivial. Failures should land somewhere your agent has to face them — an inbox, a ping, a blocked merge.
+Each check exits non-zero on failure, so wiring into CI or a cron job is trivial. Failures should land somewhere your agent has to face them. An inbox, a ping, a blocked merge.
 
 ### 3. Pre-action gate (hook)
 
 `hooks/pretool-guard.ps1` runs as a PreToolUse hook. For shell commands, it reduces the PowerShell input to AST command signatures before applying external deny/novelty regex rules, avoiding common quoted-string false positives. This is a guardrail, not a sandbox. Rules live in external JSON:
 
-- **Deny rules** — hard red lines. Example shipped: an agent must never respawn its own daemon (learned via cascade process death).
-- **Novelty gate** — before the agent builds a new tool, it must prove it scanned existing tools first (an acknowledgement comment). The agent that rebuilds tools it already has is burning your money twice.
+- **Deny rules.** Hard red lines. Example shipped: an agent must never respawn its own daemon (learned via cascade process death).
+- **Novelty gate.** Before the agent builds a new tool, it must prove it scanned existing tools first (an acknowledgement comment). The agent that rebuilds tools it already has is burning your money twice.
 
 See `rules/guard-rules.example.json` for the expected rule-file shape.
 
-Scope: the AST parse understands PowerShell commands. If your agent shells out through bash or python, you need an equivalent parser on that side — the deny-rules JSON is portable, the parser is not.
+Scope: the AST parse understands PowerShell commands. If your agent shells out through bash or python, you need an equivalent parser on that side. The deny-rules JSON is portable, the parser is not.
 
 ## Quickstart
 
@@ -70,7 +70,7 @@ pwsh -NoProfile -File bin/soplint.ps1
 pwsh -NoProfile -File tests/run_all_tests.ps1
 ```
 
-Requires PowerShell 7+ (runs on Linux / macOS / Windows — CI covers all three). See `examples/CLAUDE.md.example` for the SOP block to paste into your agent's instructions.
+Requires PowerShell 7+ (runs on Linux / macOS / Windows. CI covers all three). See `examples/CLAUDE.md.example` for the SOP block to paste into your agent's instructions.
 
 ## Install in an agent repo
 
@@ -119,22 +119,22 @@ This is a regression test suite for **known** failure modes, not alignment:
 
 - Your agent will still make novel mistakes. Lint only stops the old ones from coming back.
 - Every check here exists because something already went wrong. This is scar tissue, codified.
-- It's PowerShell because my stack is — a better fit than it sounds: the AST parser the gate relies on ships in pwsh's standard library, zero dependencies. If your stack isn't PowerShell, steal the ideas — the mechanisms (external audit trail, discipline-as-CI, AST-based pre-action gates) are portable to any language.
+- It's PowerShell because my stack is. A better fit than it sounds: the AST parser the gate relies on ships in pwsh's standard library, zero dependencies. If your stack isn't PowerShell, steal the ideas. The mechanisms (external audit trail, discipline-as-CI, AST-based pre-action gates) are portable to any language.
 
 ## The loop that makes it compound
 
-Anthropic's advice for agents: when your agent makes a mistake, have it write the lesson to CLAUDE.md or a skill. That's step one. **Step two is testing that it actually did** — a lesson written to memory is a hope; a lesson with a lint rule behind it becomes a regression signal you can run every day.
+Anthropic's advice for agents: when your agent makes a mistake, have it write the lesson to CLAUDE.md or a skill. That's step one. **Step two is testing that it actually did.** A lesson written to memory is a hope. A lesson with a lint rule behind it becomes a regression signal you can run every day.
 
 When your agent gets away with something this week, don't just correct it. Write the check.
 
-## Related — the discipline toolchain
+## Related. The discipline toolchain
 
-soplint is a **guardrail** — it audits whether an AI work node stays disciplined. Want a local agent runtime that actually runs these disciplined agents? Start with the engine:
+soplint is a **guardrail**. It audits whether an AI work node stays disciplined. Want a local agent runtime that actually runs these disciplined agents? Start with the engine:
 
-- **[aiwff-runtime](https://github.com/zaxardery8011-design/aiwff-runtime)** — the local agent runtime (the engine that runs disciplined agents) → **想要一台真的跑得動的 agent runtime？從這台小主腦開始。**
-- **[aiwff-mini](https://github.com/zaxardery8011-design/aiwff-mini)** — a personal brain with a soul file, cross-chat memory and integrity guards; paste one line into your AI tool and it installs itself → **想要一顆有靈魂錨、記得住事、還會擋自己竄改設定的個人主腦？貼一句話就裝好。**
-- **[execution-proofs](https://github.com/zaxardery8011-design/execution-proofs)** — MCP telemetry gateway: force agents to prove "done" with real files & timestamps
-- **[soplint](https://github.com/zaxardery8011-design/soplint)** — static SOP-compliance audit for AI work nodes (this repo)
+- **[aiwff-runtime](https://github.com/zaxardery8011-design/aiwff-runtime)**. 想要本機任務引擎，從 aiwff-runtime 開始。
+- **[aiwff-mini](https://github.com/zaxardery8011-design/aiwff-mini)**. 想要跨對話記憶檔，看 aiwff-mini。
+- **[execution-proofs](https://github.com/zaxardery8011-design/execution-proofs)**. MCP telemetry gateway: force agents to prove "done" with real files and timestamps
+- **[soplint](https://github.com/zaxardery8011-design/soplint)**. Static SOP-compliance audit for AI work nodes (this repo)
 
 > 引擎（跑得動的 agent）＋護欄（審紀律、逼證明），同一套「讓 AI 守紀律」哲學的兩面。
 
