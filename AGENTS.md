@@ -1,4 +1,4 @@
-# AGENTS.md — soplint, for AI coding assistants
+# AGENTS.md：soplint, for AI coding assistants
 
 > This file is for **AI coding assistants** (Claude Code / Codex / Cursor / any agent that can read files and run commands).
 > The human-facing explanation lives in `README.md`. If this file and `README.md` disagree, trust `README.md` and flag the gap.
@@ -72,9 +72,9 @@ Follow `README.md` → "For the AI Performing the Installation". It is **additiv
 
 > 安裝只准新增；不動使用者 profile、PATH、CLAUDE.md、memory、hook 設定，除非明確被要求且先備份。
 
-1. **Capability check** — confirm you can read files, write files, run commands, and report back. If any is missing, stop and create nothing. (source: `README.md` Step 0)
-2. **Dev-tree check** — if `.dev-tree` exists in the soplint checkout root, stop. Report which checks you ran. (source: `README.md` Step 1)
-3. **PowerShell 7** — run (source: `README.md` Step 2):
+1. **Capability check**: confirm you can read files, write files, run commands, and report back. If any is missing, stop and create nothing. (source: `README.md` Step 0)
+2. **Dev-tree check**: if `.dev-tree` exists in the soplint checkout root, stop. Report which checks you ran. (source: `README.md` Step 1)
+3. **PowerShell 7**: run (source: `README.md` Step 2):
    ```powershell
    pwsh -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'
    ```
@@ -89,7 +89,7 @@ Follow `README.md` → "For the AI Performing the Installation". It is **additiv
      ```
    - Already inside a soplint checkout: `Copy-Item soplint.config.example.json soplint.config.json`
    - Never overwrite an existing target; back it up as `<original-name>.bak.<timestamp>`.
-5. **Point the config (only if asked)** — ask for the real paths and write only `memory_dir`, `claude_md_path`, `beliefs_log`, `index_file`. Leave `belief_revision_days` and `index_max_kb` alone. Read the file back. Do not invent paths. (source: `README.md` Step 4)
+5. **Point the config (only if asked)**: ask for the real paths and write only `memory_dir`, `claude_md_path`, `beliefs_log`, `index_file`. Leave `belief_revision_days` and `index_max_kb` alone. Read the file back. Do not invent paths. (source: `README.md` Step 4)
 6. **Run against real files (only if configured)** (source: `README.md` Step 5):
    ```powershell
    pwsh -NoProfile -File bin/soplint.ps1 -Config <path-to-their-soplint.config.json>

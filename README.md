@@ -9,7 +9,7 @@ Code linters catch style violations. Memory tools catch broken links and stale n
 > **Start with the engine first.**
 > soplint is the guardrail, not the runtime: it audits discipline after you already have an agent that can run.
 > If you want a local agent that can take tasks, run workers, and leave file-based evidence, start with [aiwff-runtime](https://github.com/zaxardery8011-design/aiwff-runtime).
-> 中文入口: [小主腦導入頁](https://zax.com.tw/minibrain)。
+> 中文入口: [本機任務引擎導入頁](https://zax.com.tw/minibrain)。
 
 ## How it works
 
